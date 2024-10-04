@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/AFreshSalad/csc-307-app#readme",
   "workspaces": [
-      "packages/*"
-  ]
+    "packages/*"
+  ],
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
 }
