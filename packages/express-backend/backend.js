@@ -32,10 +32,10 @@ const users = {
     ]
   };
   
-const findUserByName = (name) => {
-  return users["users_list"].filter(
-    (user) => user["name"] === name
-  );
+const findUserByNameAndJob = (name, job) => {
+  return users["users_list"].filter(user => {
+    return (!name || user.name === name) && (!job || user.job === job);
+  });
 };
 
 const findUserById = (id) =>
@@ -77,8 +77,10 @@ app.delete("/users/:id", (req, res) => {
 
 app.get("/users", (req, res) => {
   const name = req.query.name; //or req.query.['name']
+  const job = req.query.job;
+  
   if (name != undefined) {
-    let result = findUserByName(name);
+    let result = findUserByNameAndJob(name, job);
     result = { users_list: result };
     res.send(result);
   } else {
