@@ -43,7 +43,18 @@ const findUserById = (id) =>
     (user) => user["id"] === id
   );
 
+const addUser = (user) => {
+    users["users_list"].push(user);
+    return user;
+  };
+  
 app.use(express.json());
+
+app.post("/users", (req, res) => {
+  const userToAdd = req.body;
+  addUser(userToAdd);
+  res.send();
+});
 
 app.get("/users", (req, res) => {
   const name = req.query.name; //or req.query.['name']
