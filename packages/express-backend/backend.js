@@ -47,6 +47,15 @@ const addUser = (user) => {
     users["users_list"].push(user);
     return user;
   };
+
+const deleteUser = (id) => {
+    const index = users["users_list"].findIndex(user => user.id === id);
+    if (index !== -1) {
+      users["users_list"].splice(index, 1);
+      return true;
+    }
+    return false;
+  };
   
 app.use(express.json());
 
@@ -54,6 +63,16 @@ app.post("/users", (req, res) => {
   const userToAdd = req.body;
   addUser(userToAdd);
   res.send();
+});
+
+app.delete("/users/:id", (req, res) => {
+  const id = req.params.id;
+  const result = deleteUser(id);
+  if (result) {
+    res.status(204).send("User deleted.");
+  } else {
+    res.status(404).send("User not found");
+  }
 });
 
 app.get("/users", (req, res) => {
