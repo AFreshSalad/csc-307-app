@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 
 const app = express();
 const port = 8000;
@@ -56,7 +57,9 @@ const deleteUser = (id) => {
     }
     return false;
   };
-  
+
+// Enable usage of cors and express libraries
+app.use(cors());
 app.use(express.json());
 
 app.post("/users", (req, res) => {
