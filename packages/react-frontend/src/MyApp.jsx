@@ -6,18 +6,12 @@ import Form from "./Form";
 function MyApp() {
   const [characters, setCharacters] = useState([]);
 
-  function removeOneCharacter(index) {
-    const updated = characters.filter((charcter, i) => {
-      return i !== index;
-    });
-    setCharacters(updated);
-  }
-
+  //HTTP Calls
   function fetchUsers() {
     const promise = fetch("http://localhost:8000/users");
     return promise;
   }
-
+  
   function postUser(person) {
     const promise = fetch("http://localhost:8000/users", {
       method: "POST",
@@ -26,8 +20,46 @@ function MyApp() {
       },
       body: JSON.stringify(person)
     });
-  
+    
     return promise;
+  }
+  
+  function deleteUser(id) {
+    const promise = fetch(`http://localhost:8000/users/${id}`, {
+      method: "DELETE"
+    });
+
+    return promise;
+  }
+
+  useEffect(() => {
+    fetchUsers()
+      .then((res) => res.json())
+      .then((json) => setCharacters(json["users_list"]))
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  //Frontend functions
+  function removeOneCharacter(index) {
+    const userToDelete = characters[index];
+    deleteUser(userToDelete.id)
+      .then((res) => {
+        if (res.status === 204) {
+          const updated = characters.filter((character, i) => {
+            return i !== index;
+          });
+          setCharacters(updated);
+        } else if (res.status === 404) {
+          throw new Error("User not found.");
+        } else {
+          throw new Error("Failed to delete user.");
+        }
+      }) 
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   function updateList(person) {
@@ -46,15 +78,6 @@ function MyApp() {
         console.log(error);
       });
   }
-
-  useEffect(() => {
-    fetchUsers()
-      .then((res) => res.json())
-      .then((json) => setCharacters(json["users_list"]))
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
 
   return (
     <div className="container">
