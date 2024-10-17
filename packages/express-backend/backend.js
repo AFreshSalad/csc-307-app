@@ -4,34 +4,34 @@ import cors from "cors";
 const app = express();
 const port = 8000;
 const users = {
-    users_list: [
-      {
-        id: "xyz789",
-        name: "Charlie",
-        job: "Janitor"
-      },
-      {
-        id: "abc123",
-        name: "Mac",
-        job: "Bouncer"
-      },
-      {
-        id: "ppp222",
-        name: "Mac",
-        job: "Professor"
-      },
-      {
-        id: "yat999",
-        name: "Dee",
-        job: "Aspring actress"
-      },
-      {
-        id: "zap555",
-        name: "Dennis",
-        job: "Bartender"
-      }
-    ]
-  };
+  users_list: [
+    {
+      id: "xyz789",
+      name: "Charlie",
+      job: "Janitor"
+    },
+    {
+      id: "abc123",
+      name: "Mac",
+      job: "Bouncer"
+    },
+    {
+      id: "ppp222",
+      name: "Mac",
+      job: "Professor"
+    },
+    {
+      id: "yat999",
+      name: "Dee",
+      job: "Aspring actress"
+    },
+    {
+      id: "zap555",
+      name: "Dennis",
+      job: "Bartender"
+    }
+  ]
+};
   
 const findUserByNameAndJob = (name, job) => {
   return users["users_list"].filter(user => {
@@ -39,24 +39,26 @@ const findUserByNameAndJob = (name, job) => {
   });
 };
 
-const findUserById = (id) =>
+const findUserById = (id) => {
   users["users_list"].find(
     (user) => user["id"] === id
   );
+};
 
 const addUser = (user) => {
-    users["users_list"].push(user);
-    return user;
-  };
+  user.id = Math.random().toString();
+  users["users_list"].push(user);
+  return user;
+};
 
 const deleteUser = (id) => {
-    const index = users["users_list"].findIndex(user => user.id === id);
-    if (index !== -1) {
-      users["users_list"].splice(index, 1);
-      return true;
-    }
-    return false;
-  };
+  const index = users["users_list"].findIndex(user => user.id === id);
+  if (index !== -1) {
+    users["users_list"].splice(index, 1);
+    return true;
+  }
+  return false;
+};
 
 // Enable usage of cors and express libraries
 app.use(cors());
