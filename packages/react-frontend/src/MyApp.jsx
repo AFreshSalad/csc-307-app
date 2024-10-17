@@ -32,10 +32,16 @@ function MyApp() {
 
   function updateList(person) {
     postUser(person)
-      .then((response) => {
-        if (response.status === 201)
-          setCharacters([...characters, person])
+      .then((res) => {
+        if (res.status === 201) {
+          return res.json();
+        } else {
+          throw new Error("Failed to add new user.")
+        }
       })
+      .then((newPerson) => {
+        setCharacters([...characters, newPerson])
+      })  
       .catch((error) => {
         console.log(error);
       });
