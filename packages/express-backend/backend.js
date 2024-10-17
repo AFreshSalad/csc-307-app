@@ -65,16 +65,16 @@ app.use(express.json());
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
   addUser(userToAdd);
-  res.send();
+  res.status(201).send(userToAdd);
 });
 
 app.delete("/users/:id", (req, res) => {
   const id = req.params.id;
   const result = deleteUser(id);
   if (result) {
-    res.status(204).send("User deleted.");
+    res.status(204).send("204 User deleted.");
   } else {
-    res.status(404).send("User not found");
+    res.status(404).send("404 User not found");
   }
 });
 
