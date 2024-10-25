@@ -1,31 +1,38 @@
 import express from "express";
 import cors from "cors";
-import { addUser, getUsers, findUserById, findUserByName, findUserByJob } from "user-service";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+import { addUser, getUsers, findUserById, findUserByName, findUserByJob } from './services/user-service.js';
 
+// Mongoose Code
+dotenv.config();
+
+const { MONGO_CONNECTION_STRING } = process.env;
+
+mongoose.set("debug", true);
+mongoose
+  .connect(MONGO_CONNECTION_STRING)
+  .catch((error) => console.log(error));
+
+// Express Code
 const app = express();
 const port = 8000;
 
-//delete this functionality
-const findUserByNameAndJob = (name, job) => {
-  return users["users_list"].filter(user => {
-    return (!name || user.name === name) && (!job || user.job === job);
-  });
-};
-
 //add this functionality later in user-service
-const deleteUser = (id) => {
-  const index = users["users_list"].findIndex(user => user.id === id);
-  if (index !== -1) {
-    users["users_list"].splice(index, 1);
-    return true;
-  }
-  return false;
-};
+//const deleteUser = (id) => {
+//  const index = users["users_list"].findIndex(user => user.id === id);
+//  if (index !== -1) {
+//    users["users_list"].splice(index, 1);
+//    return true;
+//  }
+//  return false; 
+//};
 
 // Enable usage of cors and express libraries
 app.use(cors());
 app.use(express.json());
 
+// Post call to add new user into DB
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
   addUser(userToAdd)
@@ -38,9 +45,11 @@ app.post("/users", (req, res) => {
     })
 });
 
+// Delete call to delete user in DB
 app.delete("/users/:id", (req, res) => {
   const id = req.params.id;
   const result = deleteUser(id);
+  
   if (result) {
     res.status(204).send("204 User deleted.");
   } else {
@@ -48,17 +57,79 @@ app.delete("/users/:id", (req, res) => {
   }
 });
 
-//need to adjust this later with name and job requests
+// to be implemented in user-service later
+//const findUserByNameAndJob = (name, job) => {
+//  return users["users_list"].filter(user => {
+//    return (!name || user.name === name) && (!job || user.job === job);
+//  });
+//};
+
+// Get call to get users list
+//app.get("/users", (req, res) => {
+//  const name = req.query.name; //or req.query.['name']
+//  const job = req.query.job;
+//  
+//  getUsers(name, job)
+//    .then((result) => {
+//      res.send({ users_list: result });
+//    })
+//    .catch((error) => {
+//      //"Failed to fetch users"
+//      res.status(500).send(error);
+//    });
+//
+//
+//  //if (name != undefined) {
+//  //  let result = findUserByNameAndJob(name, job);
+//  //  result = { users_list: result };
+//  //  res.send(result);
+//  //} else {
+//  //  res.send(users);
+//  //}
+//});
+
 app.get("/users", (req, res) => {
-  const name = req.query.name; //or req.query.['name']
+  const name = req.query.name;
   const job = req.query.job;
-  
-  if (name != undefined) {
-    let result = findUserByNameAndJob(name, job);
-    result = { users_list: result };
-    res.send(result);
+
+  if (name && job) {
+    Promise.all([findUserByName(name), findUserByJob(job)])
+      .then(([usersByName, usersByJob]) => {
+        const result = usersByName.filter(user => 
+          usersByJob.some(jobUser => jobUser.id === user.id));
+        res.send({ users_list: result });
+      })
+      .catch((error) => {
+        //"Failed to fetch users"
+        res.status(500).send(error);
+      });
+  } else if (name) {
+    findUserByName(name)
+      .then((result) => {
+        res.send({ users_list: result });
+      })
+      .catch((error) => {
+        //"Failed to fetch users"
+        res.status(500).send(error);
+      });
+  } else if (job) {
+    findUserByJob(job)
+      .then((result) => {
+        res.send({ users_list: result });
+      })
+      .catch((error) => {
+        //"Failed to fetch users"
+        res.status(500).send(error);
+      });
   } else {
-    res.send(users);
+    getUsers()
+      .then((result) => {
+        res.send({ users_list: result });
+      })
+      .catch((error) => {
+        //
+        res.status(500).send({ error: "Failed to fetch users" });
+      });
   }
 });
 
