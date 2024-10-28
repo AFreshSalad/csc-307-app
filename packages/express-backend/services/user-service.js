@@ -30,6 +30,10 @@ export function addUser(user) {
   return promise;
 }
 
+export function deleteUser(id) {
+  return userModel.findByIdAndDelete(id);
+}
+
 export function findUserById(id) {
   return userModel.findById(id);
 }
@@ -41,11 +45,3 @@ export function findUserByName(name) {
 export function findUserByJob(job) {
   return userModel.find({ job: job });
 }
-
-export default {
-  addUser,
-  getUsers,
-  findUserById,
-  findUserByName,
-  findUserByJob,
-};

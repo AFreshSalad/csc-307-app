@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import { addUser, getUsers, findUserById, findUserByName, findUserByJob } from './services/user-service.js';
+import { addUser, getUsers, findUserById, deleteUser } from './services/user-service.js';
 
 // Mongoose Code
 dotenv.config();
@@ -17,16 +17,6 @@ mongoose
 // Express Code
 const app = express();
 const port = 8000;
-
-//add this functionality later in user-service
-//const deleteUser = (id) => {
-//  const index = users["users_list"].findIndex(user => user.id === id);
-//  if (index !== -1) {
-//    users["users_list"].splice(index, 1);
-//    return true;
-//  }
-//  return false; 
-//};
 
 // Enable usage of cors and express libraries
 app.use(cors());
@@ -48,13 +38,14 @@ app.post("/users", (req, res) => {
 // Delete call to delete user in DB
 app.delete("/users/:id", (req, res) => {
   const id = req.params.id;
-  const result = deleteUser(id);
   
-  if (result) {
-    res.status(204).send("204 User deleted.");
-  } else {
-    res.status(404).send("404 User not found");
-  }
+  deleteUser(id)
+    .then((result) => {
+      res.status(204).send("204 User deleted.");
+    })
+    .catch((error) => {
+      res.status(404).send("404 User not found");
+    })
 });
 
 // Get call to get users list
