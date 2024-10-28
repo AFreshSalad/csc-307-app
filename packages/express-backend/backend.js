@@ -57,80 +57,19 @@ app.delete("/users/:id", (req, res) => {
   }
 });
 
-// to be implemented in user-service later
-//const findUserByNameAndJob = (name, job) => {
-//  return users["users_list"].filter(user => {
-//    return (!name || user.name === name) && (!job || user.job === job);
-//  });
-//};
-
 // Get call to get users list
-//app.get("/users", (req, res) => {
-//  const name = req.query.name; //or req.query.['name']
-//  const job = req.query.job;
-//  
-//  getUsers(name, job)
-//    .then((result) => {
-//      res.send({ users_list: result });
-//    })
-//    .catch((error) => {
-//      //"Failed to fetch users"
-//      res.status(500).send(error);
-//    });
-//
-//
-//  //if (name != undefined) {
-//  //  let result = findUserByNameAndJob(name, job);
-//  //  result = { users_list: result };
-//  //  res.send(result);
-//  //} else {
-//  //  res.send(users);
-//  //}
-//});
-
 app.get("/users", (req, res) => {
-  const name = req.query.name;
+  const name = req.query.name; //or req.query.['name']
   const job = req.query.job;
-
-  if (name && job) {
-    Promise.all([findUserByName(name), findUserByJob(job)])
-      .then(([usersByName, usersByJob]) => {
-        const result = usersByName.filter(user => 
-          usersByJob.some(jobUser => jobUser.id === user.id));
-        res.send({ users_list: result });
-      })
-      .catch((error) => {
-        //"Failed to fetch users"
-        res.status(500).send(error);
-      });
-  } else if (name) {
-    findUserByName(name)
-      .then((result) => {
-        res.send({ users_list: result });
-      })
-      .catch((error) => {
-        //"Failed to fetch users"
-        res.status(500).send(error);
-      });
-  } else if (job) {
-    findUserByJob(job)
-      .then((result) => {
-        res.send({ users_list: result });
-      })
-      .catch((error) => {
-        //"Failed to fetch users"
-        res.status(500).send(error);
-      });
-  } else {
-    getUsers()
-      .then((result) => {
-        res.send({ users_list: result });
-      })
-      .catch((error) => {
-        //
-        res.status(500).send({ error: "Failed to fetch users" });
-      });
-  }
+  
+  getUsers(name, job)
+    .then((result) => {
+      res.send({ users_list: result });
+    })
+    .catch((error) => {
+      //"Failed to fetch users"
+      res.status(500).send(error);
+    });
 });
 
 app.get("/users/:id", (req, res) => {

@@ -12,24 +12,26 @@ import userModel from "../models/user.js";
 
 export function getUsers(name, job) {
   let promise;
-  if (name === undefined && job === undefined) {
-    promise = userModel.find();
+  if (name && job) {
+    promise = userModel.find({ name: name, job: job });
   } else if (name && !job) {
     promise = findUserByName(name);
   } else if (job && !name) {
     promise = findUserByJob(job);
+  } else if (name === undefined && job === undefined) {
+    promise = userModel.find();
   }
   return promise;
-}
-
-export function findUserById(id) {
-  return userModel.findById(id);
 }
 
 export function addUser(user) {
   const userToAdd = new userModel(user);
   const promise = userToAdd.save();
   return promise;
+}
+
+export function findUserById(id) {
+  return userModel.findById(id);
 }
 
 export function findUserByName(name) {
